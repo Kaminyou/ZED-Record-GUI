@@ -1,8 +1,9 @@
-import tkinter as tk
-from tkinter import filedialog, messagebox, font
 import os
 import threading
 import time
+import tkinter as tk
+from tkinter import filedialog, messagebox, font
+
 
 class FileWritingApp:
     def __init__(self, master):
@@ -25,7 +26,11 @@ class FileWritingApp:
         self.cwd_label = tk.Label(master, textvariable=self.cwd_label_text, font=bold_font)
         self.cwd_label.pack()
 
-        self.change_dir_button = tk.Button(master, text='Change Directory', command=self.change_directory)
+        self.change_dir_button = tk.Button(
+            master,
+            text='Change Directory',
+            command=self.change_directory,
+        )
         self.change_dir_button.pack()
 
         self.file_name_label = tk.Label(master, text='Enter File Name:')
@@ -37,7 +42,12 @@ class FileWritingApp:
         self.start_button = tk.Button(master, text='Start', command=self.start_writing)
         self.start_button.pack()
 
-        self.stop_button = tk.Button(master, text='Stop', command=self.stop_writing, state=tk.DISABLED)
+        self.stop_button = tk.Button(
+            master,
+            text='Stop',
+            command=self.stop_writing,
+            state=tk.DISABLED,
+        )
         self.stop_button.pack()
 
         self.time_elapsed = tk.StringVar()
@@ -71,10 +81,10 @@ class FileWritingApp:
             self.write_thread = threading.Thread(target=self.write_numbers)
             self.write_thread.start()
             self.start_time = time.time()
+
         else:
             messagebox.showerror('Error', 'Please enter a file name.')
             return
-
 
     def stop_writing(self):
         self.is_writing = False
@@ -97,11 +107,12 @@ class FileWritingApp:
                 self.master.update_idletasks()
                 i += 1
                 time.sleep(1)
-    
+
     def exit_app(self):
         if self.is_writing:
             self.stop_writing()
         self.master.destroy()
+
 
 if __name__ == '__main__':
     root = tk.Tk()
