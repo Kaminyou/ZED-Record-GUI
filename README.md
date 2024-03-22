@@ -1,3 +1,4 @@
+![linting workflow](https://github.com/Kaminyou/ZED-Record-GUI/actions/workflows/main.yml/badge.svg)
 # ZED-Record-GUI
 A GUI implemented by Python for ZED video recording
 
