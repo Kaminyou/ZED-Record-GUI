@@ -12,6 +12,9 @@ $ sudo apt-get install python3-tk
 $ pip install pyinstaller
 ```
 
+### `pyzed`
+Please refer to the [official document of ZED](https://www.stereolabs.com/docs/app-development/python/install).
+
 ## Build
 ```
 $ pyinstaller --hidden-import=tkinter --hidden-import=tkinter.filedialog main.py --onefile -w
