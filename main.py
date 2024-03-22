@@ -2,8 +2,12 @@ import os
 import threading
 import time
 import tkinter as tk
+import sys
+import pyzed.sl as sl
+from signal import signal, SIGINT
 from tkinter import filedialog, messagebox, font
 
+cam = sl.Camera()
 
 class FileWritingApp:
     def __init__(self, master):
@@ -51,7 +55,7 @@ class FileWritingApp:
         self.stop_button.pack()
 
         self.time_elapsed = tk.StringVar()
-        self.time_elapsed.set('Time: 0 seconds')
+        self.time_elapsed.set('Not recording')
         self.time_label = tk.Label(master, textvariable=self.time_elapsed)
         self.time_label.pack()
 
@@ -70,7 +74,7 @@ class FileWritingApp:
     def start_writing(self):
         self.file_name = self.file_name_entry.get()
         if self.file_name:
-            if os.path.exists(self.file_name):
+            if os.path.exists(f'{self.file_name}.svo'):
                 messagebox.showerror('Error', 'File already exists. Please enter a different name.')
                 return
             self.is_writing = True
@@ -88,25 +92,48 @@ class FileWritingApp:
 
     def stop_writing(self):
         self.is_writing = False
-        self.write_thread.join()
-        self.write_thread = None
+        # self.write_thread.join()
+        # self.write_thread = None
         self.stop_button.config(state=tk.DISABLED)
         self.start_button.config(state=tk.NORMAL)
         self.file_name_entry.config(state=tk.NORMAL)
         self.change_dir_button.config(state=tk.NORMAL)
-        self.time_elapsed.set('Time: 0 seconds')
+        self.time_elapsed.set('Not recording')
 
     def write_numbers(self):
-        with open(self.file_name, 'w') as f:
-            i = 1
+        self.time_elapsed.set(f'Preparing recording')
+        
+        init = sl.InitParameters()
+        init.depth_mode = sl.DEPTH_MODE.NONE # Set configuration parameters for the ZED
+        init.camera_resolution = sl.RESOLUTION.HD1080
+        init.camera_fps = 30
+
+        status = cam.open(init)
+        if status != sl.ERROR_CODE.SUCCESS: 
+            self.time_elapsed.set(f'No camera detected')
+            return False
+            
+        recording_param = sl.RecordingParameters(f'{self.file_name}.svo', sl.SVO_COMPRESSION_MODE.H264) # Enable recording with the filename specified in argument
+        err = cam.enable_recording(recording_param)
+        if err != sl.ERROR_CODE.SUCCESS:
+            self.time_elapsed.set(f'Error {err}')
+            return False
+
+        runtime = sl.RuntimeParameters()
+        # print("SVO is Recording, use Ctrl-C to stop.") # Start recording SVO, stop with Ctrl-C command
+        frames_recorded = 0
+
+        with open(f'{self.file_name}.txt', 'w') as f:
             while self.is_writing:
-                f.write(f'{i}\n')
-                f.flush()
-                elapsed_time = int(time.time() - self.start_time)
-                self.time_elapsed.set(f'Time: {elapsed_time} seconds')
-                self.master.update_idletasks()
-                i += 1
-                time.sleep(1)
+                if cam.grab(runtime) == sl.ERROR_CODE.SUCCESS : # Check that a new image is successfully acquired
+                    frames_recorded += 1
+                    #print("Frame count: " + str(frames_recorded), end="\r")
+                    self.time_elapsed.set(f'Recording with frame count: {frames_recorded}')
+                    f.write(f'{frames_recorded},{round(time.time() * 1000)}\n')
+        cam.disable_recording()
+        cam.close()
+        self.time_elapsed.set(f'Stop recording with frame count: {frames_recorded}')
+        return True
 
     def exit_app(self):
         if self.is_writing:
