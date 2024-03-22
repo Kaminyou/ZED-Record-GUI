@@ -105,7 +105,7 @@ class FileWritingApp:
         self.time_elapsed.set('Preparing recording')
 
         init = sl.InitParameters()
-        init.depth_mode = sl.DEPTH_MODE.NONE # Set configuration parameters for the ZED
+        init.depth_mode = sl.DEPTH_MODE.NONE  # Set configuration parameters for the ZED
         init.camera_resolution = sl.RESOLUTION.HD1080
         init.camera_fps = 30
 
@@ -114,7 +114,7 @@ class FileWritingApp:
             self.time_elapsed.set('No camera detected')
             return False
 
-        recording_param = sl.RecordingParameters(f'{self.file_name}.svo', sl.SVO_COMPRESSION_MODE.H264) # Enable recording with the filename specified in argument
+        recording_param = sl.RecordingParameters(f'{self.file_name}.svo', sl.SVO_COMPRESSION_MODE.H264)
         err = cam.enable_recording(recording_param)
         if err != sl.ERROR_CODE.SUCCESS:
             self.time_elapsed.set(f'Error {err}')
@@ -125,7 +125,7 @@ class FileWritingApp:
 
         with open(f'{self.file_name}.txt', 'w') as f:
             while self.is_writing:
-                if cam.grab(runtime) == sl.ERROR_CODE.SUCCESS : # Check that a new image is successfully acquired
+                if cam.grab(runtime) == sl.ERROR_CODE.SUCCESS:
                     frames_recorded += 1
                     self.time_elapsed.set(f'Recording with frame count: {frames_recorded}')
                     f.write(f'{frames_recorded},{round(time.time() * 1000)}\n')
@@ -144,4 +144,3 @@ if __name__ == '__main__':
     root = tk.Tk()
     app = FileWritingApp(root)
     root.mainloop()
-
