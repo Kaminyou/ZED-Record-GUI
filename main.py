@@ -114,7 +114,10 @@ class FileWritingApp:
             self.time_elapsed.set('No camera detected')
             return False
 
-        recording_param = sl.RecordingParameters(f'{self.file_name}.svo', sl.SVO_COMPRESSION_MODE.H264)
+        recording_param = sl.RecordingParameters(
+            f'{self.file_name}.svo',
+            sl.SVO_COMPRESSION_MODE.H264,
+        )
         err = cam.enable_recording(recording_param)
         if err != sl.ERROR_CODE.SUCCESS:
             self.time_elapsed.set(f'Error {err}')
