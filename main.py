@@ -10,12 +10,12 @@ import pyzed.sl as sl
 cam = sl.Camera()
 
 
-class FileWritingApp:
+class ZEDRecordingApp:
     def __init__(self, master):
         self.master = master
         master.title('ZED recording')
 
-        window_width = 500
+        window_width = 600
         window_height = 200
 
         screen_width = master.winfo_screenwidth()
@@ -27,7 +27,7 @@ class FileWritingApp:
 
         bold_font = font.Font(weight='bold')
         self.cwd_label_text = tk.StringVar()
-        self.cwd_label_text.set('Current Working Directory: ' + os.getcwd())
+        self.cwd_label_text.set(f'Current Working Directory: {os.getcwd()}')
         self.cwd_label = tk.Label(master, textvariable=self.cwd_label_text, font=bold_font)
         self.cwd_label.pack()
 
@@ -55,9 +55,9 @@ class FileWritingApp:
         )
         self.stop_button.pack()
 
-        self.time_elapsed = tk.StringVar()
-        self.time_elapsed.set('Not recording')
-        self.time_label = tk.Label(master, textvariable=self.time_elapsed)
+        self.recording_message = tk.StringVar()
+        self.recording_message.set('Not recording')
+        self.time_label = tk.Label(master, textvariable=self.recording_message)
         self.time_label.pack()
 
         self.exit_button = tk.Button(master, text='Exit', command=self.exit_app)
@@ -83,7 +83,7 @@ class FileWritingApp:
             self.stop_button.config(state=tk.NORMAL)
             self.file_name_entry.config(state=tk.DISABLED)
             self.change_dir_button.config(state=tk.DISABLED)
-            self.write_thread = threading.Thread(target=self.write_numbers)
+            self.write_thread = threading.Thread(target=self.recording)
             self.write_thread.start()
             self.start_time = time.time()
 
@@ -99,19 +99,19 @@ class FileWritingApp:
         self.start_button.config(state=tk.NORMAL)
         self.file_name_entry.config(state=tk.NORMAL)
         self.change_dir_button.config(state=tk.NORMAL)
-        self.time_elapsed.set('Not recording')
+        self.recording_message.set('Not recording')
 
-    def write_numbers(self):
-        self.time_elapsed.set('Preparing recording')
+    def recording(self):
+        self.recording_message.set('Preparing recording')
 
         init = sl.InitParameters()
-        init.depth_mode = sl.DEPTH_MODE.NONE  # Set configuration parameters for the ZED
+        init.depth_mode = sl.DEPTH_MODE.NONE
         init.camera_resolution = sl.RESOLUTION.HD1080
         init.camera_fps = 30
 
         status = cam.open(init)
         if status != sl.ERROR_CODE.SUCCESS:
-            self.time_elapsed.set('No camera detected')
+            self.recording_message.set('No camera detected')
             return False
 
         recording_param = sl.RecordingParameters(
@@ -120,7 +120,7 @@ class FileWritingApp:
         )
         err = cam.enable_recording(recording_param)
         if err != sl.ERROR_CODE.SUCCESS:
-            self.time_elapsed.set(f'Error {err}')
+            self.recording_message.set(f'Error {err}')
             return False
 
         runtime = sl.RuntimeParameters()
@@ -130,11 +130,12 @@ class FileWritingApp:
             while self.is_writing:
                 if cam.grab(runtime) == sl.ERROR_CODE.SUCCESS:
                     frames_recorded += 1
-                    self.time_elapsed.set(f'Recording with frame count: {frames_recorded}')
+                    self.recording_message.set(f'Recording with frame count: {frames_recorded}')
                     f.write(f'{frames_recorded},{round(time.time() * 1000)}\n')
+
         cam.disable_recording()
         cam.close()
-        self.time_elapsed.set(f'Stop recording with frame count: {frames_recorded}')
+        self.recording_message.set(f'Stop recording with frame count: {frames_recorded}')
         return True
 
     def exit_app(self):
@@ -145,5 +146,5 @@ class FileWritingApp:
 
 if __name__ == '__main__':
     root = tk.Tk()
-    app = FileWritingApp(root)
+    app = ZEDRecordingApp(root)
     root.mainloop()
