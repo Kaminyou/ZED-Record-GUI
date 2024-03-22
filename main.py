@@ -2,12 +2,13 @@ import os
 import threading
 import time
 import tkinter as tk
-import sys
+from tkinter import filedialog, font, messagebox
+
 import pyzed.sl as sl
-from signal import signal, SIGINT
-from tkinter import filedialog, messagebox, font
+
 
 cam = sl.Camera()
+
 
 class FileWritingApp:
     def __init__(self, master):
@@ -101,18 +102,18 @@ class FileWritingApp:
         self.time_elapsed.set('Not recording')
 
     def write_numbers(self):
-        self.time_elapsed.set(f'Preparing recording')
-        
+        self.time_elapsed.set('Preparing recording')
+
         init = sl.InitParameters()
         init.depth_mode = sl.DEPTH_MODE.NONE # Set configuration parameters for the ZED
         init.camera_resolution = sl.RESOLUTION.HD1080
         init.camera_fps = 30
 
         status = cam.open(init)
-        if status != sl.ERROR_CODE.SUCCESS: 
-            self.time_elapsed.set(f'No camera detected')
+        if status != sl.ERROR_CODE.SUCCESS:
+            self.time_elapsed.set('No camera detected')
             return False
-            
+
         recording_param = sl.RecordingParameters(f'{self.file_name}.svo', sl.SVO_COMPRESSION_MODE.H264) # Enable recording with the filename specified in argument
         err = cam.enable_recording(recording_param)
         if err != sl.ERROR_CODE.SUCCESS:
@@ -120,14 +121,12 @@ class FileWritingApp:
             return False
 
         runtime = sl.RuntimeParameters()
-        # print("SVO is Recording, use Ctrl-C to stop.") # Start recording SVO, stop with Ctrl-C command
         frames_recorded = 0
 
         with open(f'{self.file_name}.txt', 'w') as f:
             while self.is_writing:
                 if cam.grab(runtime) == sl.ERROR_CODE.SUCCESS : # Check that a new image is successfully acquired
                     frames_recorded += 1
-                    #print("Frame count: " + str(frames_recorded), end="\r")
                     self.time_elapsed.set(f'Recording with frame count: {frames_recorded}')
                     f.write(f'{frames_recorded},{round(time.time() * 1000)}\n')
         cam.disable_recording()
@@ -145,3 +144,4 @@ if __name__ == '__main__':
     root = tk.Tk()
     app = FileWritingApp(root)
     root.mainloop()
+
