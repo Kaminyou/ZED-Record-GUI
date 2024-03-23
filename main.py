@@ -25,7 +25,7 @@ class ZEDRecordingApp:
         center_y = int((screen_height/2) - (window_height / 2))
         master.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
-        bold_font = font.Font(weight='bold')
+        bold_font = font.Font(weight='bold', size=9)
         self.cwd_label_text = tk.StringVar()
         self.cwd_label_text.set(f'Current Working Directory: {os.getcwd()}')
         self.cwd_label = tk.Label(master, textvariable=self.cwd_label_text, font=bold_font)
