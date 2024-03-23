@@ -22,7 +22,11 @@ Please refer to the [official document of ZED](https://www.stereolabs.com/docs/a
 
 ## Build
 ```
-$ pyinstaller --hidden-import=tkinter --hidden-import=tkinter.filedialog main.py --onefile -w
+$ pyinstaller zed_record.spec
+```
+or
+```
+$ pyinstaller --hidden-import=tkinter --hidden-import=tkinter.filedialog --hidden-import numpy main.py --onefile -w -n zed_record --icon ./images/zed_recording.ico
 ```
 Then the executable file will be `dist/main`
 
