@@ -73,6 +73,7 @@ class ZEDRecordingApp:
             self.cwd_label_text.set('Current Working Directory: ' + os.getcwd())
 
     def start_writing(self):
+        self.recording_message.set('')
         self.file_name = self.file_name_entry.get()
         if self.file_name:
             if os.path.exists(f'{self.file_name}.svo'):
@@ -135,7 +136,7 @@ class ZEDRecordingApp:
 
         cam.disable_recording()
         cam.close()
-        self.recording_message.set(f'Stop recording with frame count: {frames_recorded}')
+        self.recording_message.set('Stop recording')
         return True
 
     def exit_app(self):
