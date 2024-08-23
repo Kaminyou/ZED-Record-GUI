@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## V1.1.1
+### Improvements
+- Make the input text box wider
+
 ## v1.1.0
 ### New features
 - Add an icon
