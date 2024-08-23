@@ -41,7 +41,7 @@ class ZEDRecordingApp:
         self.file_name_label = tk.Label(master, text='Enter File Name:')
         self.file_name_label.pack()
 
-        self.file_name_entry = tk.Entry(master)
+        self.file_name_entry = tk.Entry(master, width=50)
         self.file_name_entry.pack()
 
         self.start_button = tk.Button(master, text='Start', command=self.start_writing)
