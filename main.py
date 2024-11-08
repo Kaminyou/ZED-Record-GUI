@@ -106,7 +106,7 @@ class ZEDRecordingApp:
         self.recording_message.set('Preparing recording')
 
         init = sl.InitParameters()
-        init.depth_mode = sl.DEPTH_MODE.NONE
+        init.depth_mode = sl.DEPTH_MODE.ULTRA
         init.camera_resolution = sl.RESOLUTION.HD1080
         init.camera_fps = 30
 
