@@ -19,7 +19,7 @@ $ pip install pyinstaller
 
 ### `pyzed`
 Please refer to the [official document of ZED](https://www.stereolabs.com/docs/app-development/python/install).
-Set  ZED_SDK_SVO_VERSION=1 to your enviroment (Set ouput file as svo file)
+Set an environment variable `ZED_SDK_SVO_VERSION=1` in your enviroment (Set ouput file as svo file)
 
 ## Build
 ```
