@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## V1.1.1
+## v1.2.0
+### Upgrade
+- Add settings for ZED2i
+
+## v1.1.1
 ### Improvements
 - Make the input text box wider
 
